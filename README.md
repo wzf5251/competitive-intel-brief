@@ -27,6 +27,8 @@
 
 ## 安装
 
+把下面的 `<你的用户名>` 换成本仓库的 GitHub 账号名（也可以直接在 GitHub 页面点 Code 复制 clone 地址）。
+
 macOS / Linux：
 
 ```bash
