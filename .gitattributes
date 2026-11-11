@@ -1,0 +1,10 @@
+# 仓库内统一 LF，避免 Windows 检出 CRLF 后 diff 全是噪音
+* text=auto eol=lf
+
+*.py   text eol=lf
+*.md   text eol=lf
+*.html text eol=lf
+
+*.png  binary
+*.zip  binary
+*.xlsx binary

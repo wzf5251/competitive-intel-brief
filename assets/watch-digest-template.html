@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<!--
+  竞品公开情报监控 · 一页速览模板
+  版式取向：财经媒体 / 简报版面。留白与字号承担层级，不用卡片、圆角、彩色底块。
+  填充方式：替换全部双花括号占位符，删除本注释块。
+  占位符（共 9 个）：
+    {{REPORT_DATE}}     监测日期，如 2026-11-10
+    {{GEN_TIME}}        生成时刻，如 2026-11-10 17:20
+    {{HEADLINE}}        本期头条一句话，可含 <strong>（只标 1–2 处关键数字，别整句加粗），**控制在 32 字内**
+                        日期、价格这类不能被拆开的短串，用 <span class="nw">11-30</span> 包住，
+                        否则「11-30」会在连字符处折成「11-」「30」
+                        关键动作词（中选 / 降价 / 获批 / 执行）也建议用 <span class="nw">…</span> 包住，
+                        中文是按字断行的，不加约束会把「中选」拆成「中」和「选」分居两行
+    {{STATS}}           四个数字块，见下方 STATS 示例结构
+    {{ALERT_RED}}       <li> 列表，红色预警；结构见下方 ALERT 示例
+    {{ALERT_AMBER}}     <li> 列表，黄色关注；同上
+    {{TENDER_ROWS}}     <tr> 行（6 列：类型/项目/产品（规格）/竞品状态/中选价/执行期），只列采购周期未结束的
+    {{CALENDAR_ROWS}}   <tr> 行（4 列：日期/事件/阶段/我方准备），政策日历
+    {{FOOTER_META}}     页脚一行元信息
+  文件名与页内标识：文件名带「产品名称(规格)」段（如 竞品监测-2026-11-11_0930-保妥适(100U／支).html），
+  FOOTER_META 首项必须写同一个「产品名称(规格)」串，与文件名一字不差；HEADLINE 出现产品时也用同一写法。
+  准入规则：只放红黄两级与日历。绿级、待核验、扫描明细不进本页。
+
+  STATS 示例（四个，顺序固定：本期变化 / 红色预警 / 黄色关注 / 无变化信号）：
+    <div class="stat"><b>7</b><span>本期变化</span></div>
+    <div class="stat red"><b>2</b><span>红色预警</span></div>
+    <div class="stat"><b>3</b><span>黄色关注</span></div>
+    <div class="stat"><b>12</b><span>无变化信号</span></div>
+  红色预警为 0 时**去掉 red 类**（<div class="stat"><b>0</b>…</div>），否则 0 还是一片红，
+  读者第一眼仍会以为有警报。
+
+  ALERT 示例（标签 4 字内，同一区块内字数保持一致，正文左边缘才能对齐；
+  主句写事实与数字，<strong> 只圈关键值；<em> 写行动建议或判断，另起一行小字灰）：
+    <li><span class="tag tag-red">集采中选</span><span class="alert-body">
+      竞品B 第十二批国采中选（GY-YD2026-1），中选价 <strong>998.5 元/支</strong>，低于我方挂网价 <strong>12.4%</strong>。
+      <em>距 11-30 执行 20 天，需在 11-25 前完成调价测算。</em>
+    </span></li>
+
+  空状态必须显式写，不许留空 ul：
+    <li class="empty">本期无红级变化（已核 16 个信号位）</li>
+  且本期无红级时，把红区改成 <section class="action is-empty">，红线转灰。
+  留一个空的红色大块，读者会以为漏了；写「无」也不行，要写「已核 N 个信号位」。
+
+  加粗只用 <strong>，不要用 <b>；一句话里最多圈 2–3 处，整句加粗等于没加粗。
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>竞品动态监测 · {{REPORT_DATE}}</title>
+<style>
+  :root{
+    --bg:#eff0f2; --paper:#ffffff;
+    --ink:#16191d; --ink-2:#4a5159; --ink-3:#878e96;
+    --line:#d9dde2; --line-2:#eceef1; --rule:#16191d;
+    --navy:#12293f;
+    --red:#a4211a; --amber:#8a5b00;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; padding:32px 20px 48px;
+    background:var(--bg); color:var(--ink);
+    /* 中文黑体：PingFang/微软雅黑都有真 bold，避免 Windows 下宋体合成粗体把行宽撑乱 */
+    font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Source Han Sans SC","Noto Sans CJK SC",-apple-system,"Segoe UI",sans-serif;
+    font-size:14px; line-height:1.72;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  /* 无圆角、无阴影：纸面感来自留白与线，不是来自卡片 */
+  .card{
+    max-width:840px; margin:0 auto; background:var(--paper);
+    border:1px solid var(--line);
+    padding:36px 40px 32px;
+  }
+  .sans{font-family:inherit;}
+
+  /* ── 报头 ── */
+  .masthead{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    gap:16px; flex-wrap:wrap;
+    padding-bottom:12px; border-bottom:2px solid var(--rule);
+  }
+  .masthead h1{
+    margin:0; font-size:21px; font-weight:800; letter-spacing:3px;
+    color:var(--ink); line-height:1.2;
+  }
+  .masthead .meta{
+    font-size:11.5px; color:var(--ink-3); letter-spacing:.2px;
+    text-align:right; line-height:1.75; font-variant-numeric:tabular-nums;
+  }
+  .dateline{
+    display:flex; justify-content:space-between; gap:12px;
+    font-size:10.5px; color:var(--ink-3);
+    letter-spacing:.4px;
+    padding-top:9px; padding-bottom:2px;
+  }
+  /* 只有拉丁字母拉宽字距才好看，中文拉开就成了散字 */
+  .dateline .en{letter-spacing:1.6px; text-transform:uppercase;}
+
+  /* ── 头条 ── */
+  .lede{padding:22px 0 0;}
+  .lede h2{
+    margin:0 0 22px; font-size:27px; line-height:1.42; font-weight:700;
+    letter-spacing:-.2px; color:var(--ink);
+    /* break-word 而不是 anywhere：anywhere 会让「11-30」从连字符处折成「11-」「30」 */
+    overflow-wrap:break-word; word-break:normal;
+    /* 两行长度尽量均衡，避免第二行只剩几个字 */
+    text-wrap:balance;
+  }
+  /* 关键数字只上色，不加底色：荧光笔式高亮在正式简报里显得轻浮 */
+  .lede h2 strong{color:var(--red); font-weight:800;}
+
+  /* ── 数字条：上下两道线，无边框无底色，像报头的数据栏 ── */
+  .stats{
+    display:grid; grid-template-columns:repeat(4,1fr);
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--line);
+    padding:13px 0 12px;
+  }
+  .stat{padding-left:18px; border-left:1px solid var(--line-2);}
+  .stat:first-child{padding-left:0; border-left:0;}
+  .stat b{
+    display:block; font-size:23px; line-height:1.15; font-weight:800;
+    color:var(--ink); font-variant-numeric:tabular-nums; letter-spacing:-.3px;
+  }
+  .stat span{display:block; margin-top:3px; font-size:11px; color:var(--ink-3); letter-spacing:.3px;}
+  .stat.red b{color:var(--red);}
+  .stat.red span{color:var(--ink-3);}
+  /* 第四个固定是「无变化信号」：弱化，别跟红色预警抢注意力 */
+  .stat:last-child b{color:#98a1aa; font-weight:700;}
+
+  /* ── 分区 ── */
+  section{padding:26px 0 4px;}
+  section + section{border-top:1px solid var(--line-2);}
+  .sec-head{display:flex; align-items:baseline; gap:10px; margin-bottom:14px;}
+  .sec-head h3{
+    margin:0; font-size:15px; font-weight:800; color:var(--ink); letter-spacing:1px;
+    line-height:1.3;
+  }
+  .sec-head .note{font-size:11px; color:var(--ink-3); letter-spacing:.4px;}
+
+  /* 红区：不加底色，只在标题上方压一道红线，颜色克制但位置最靠前 */
+  section.action{border-top:3px solid var(--red); margin-top:24px; padding-top:15px;}
+  section.action .sec-head h3{color:var(--red);}
+  section.action .sec-head .note{color:var(--ink-3);}
+  /* 本期无红级：红线撤掉换成普通细线，避免一条粗杠让人以为有警报 */
+  section.action.is-empty{border-top-width:1px; border-top-color:var(--line); padding-top:17px;}
+  section.action.is-empty .sec-head h3{color:var(--ink-2);}
+
+  /* ── 预警列表 ── */
+  ul.alerts{list-style:none; margin:0; padding:0;}
+  ul.alerts li{
+    display:flex; gap:0; align-items:flex-start;
+    padding:12px 0; border-bottom:1px solid var(--line-2);
+    font-size:14.5px; line-height:1.78;
+    /* 避免末行只剩一两个字（如「布。」独占一行） */
+    text-wrap:pretty;
+  }
+  ul.alerts li:first-child{padding-top:2px;}
+  ul.alerts li:last-child{border-bottom:0; padding-bottom:0;}
+  /* 空状态：不占整行，走灰字提示 */
+  ul.alerts li.empty{display:block; border-bottom:0; font-size:13.5px; color:var(--ink-3);}
+  /* 标签：纯文字着色 + 右侧一道细线，取消实底色块。定宽让所有正文左边缘对齐；
+     竖线随条目高度拉满（align-self:stretch），长条目不会出现一截悬空的短线 */
+  .tag{
+    flex:0 0 68px; width:68px; align-self:stretch;
+    padding:1px 14px 0 0;
+    border-right:1px solid var(--line);
+    font-size:11.5px; font-weight:700; letter-spacing:.8px;
+    line-height:1.8; white-space:nowrap; text-align:left;
+  }
+  .tag-red{color:var(--red);}
+  .tag-amber{color:var(--amber);}
+  /* 中文没有空格分词，pretty 不生效；用 balance 让两行长度接近，避免末行只剩两三个字 */
+  .alert-body{flex:1 1 auto; min-width:0; padding-left:14px; text-wrap:balance;}
+  .alert-body strong{font-weight:800; color:var(--ink);}
+  /* 行动建议/判断：另起一行、小一号、灰字，与事实句靠字号分层，不加装饰线 */
+  .alert-body em{
+    display:block; margin-top:4px;
+    font-style:normal; font-size:12.5px; line-height:1.68; color:var(--ink-2);
+  }
+
+  /* 日期、价格、型号这类短串不想被折断时，用 <span class="nw">…</span> 包住 */
+  .nw{white-space:nowrap;}
+
+  /* ── 表格：只有横线，表头做灰字小标 + 上粗下细两道线 ── */
+  .tbl-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch;}
+  table.cal{
+    width:100%; min-width:520px;
+    border-collapse:collapse; font-size:13px;
+  }
+  table.cal th{
+    text-align:left; font-size:10.5px; font-weight:700; letter-spacing:.6px;
+    color:var(--ink-2); background:none;
+    padding:8px 12px 7px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    white-space:nowrap;
+  }
+  table.cal td{
+    padding:9px 12px 9px 0; border-bottom:1px solid var(--line-2);
+    vertical-align:top; line-height:1.62;
+  }
+  table.cal tbody tr:last-child td{border-bottom:0;}
+  /* 首列左对齐版面左边缘、末列右对齐版面右边缘，表格才和标题同宽 */
+  table.cal th:last-child, table.cal td:last-child{padding-right:0;}
+  table.cal td:first-child{
+    white-space:nowrap; color:var(--ink); font-weight:700;
+    font-variant-numeric:tabular-nums;
+  }
+  table.cal td.phase{white-space:nowrap; color:var(--amber); font-weight:600;}
+
+  /* 招采表：6 列，数字右对齐、状态加重 */
+  table.tender{min-width:670px;}
+  table.tender td:nth-child(1){white-space:nowrap; color:var(--ink-2);}
+  table.tender td:nth-child(3){white-space:nowrap;}
+  table.tender td:nth-child(4){white-space:nowrap; font-weight:700; color:var(--ink);}
+  table.tender td:nth-child(5){
+    white-space:nowrap; text-align:right; font-weight:700;
+    font-variant-numeric:tabular-nums;
+    padding-right:24px;
+  }
+  /* 表头跟着数据右对齐，否则「中选价」标题和数据分居两端 */
+  table.tender th:nth-child(5){text-align:right; padding-right:24px;}
+  table.tender td:nth-child(6){white-space:nowrap; color:var(--ink-2); font-size:12.5px;}
+  /* 价格列与执行期列之间留出呼吸位，否则两个数字挤成一片 */
+  table.tender th:nth-child(6), table.tender td:nth-child(6){padding-left:18px;}
+
+  /* ── 页脚 ── */
+  .disclaimer{
+    margin-top:30px; padding-top:12px; border-top:1px solid var(--rule);
+    font-size:11px; color:var(--ink-3); line-height:1.95;
+  }
+  .disclaimer b{color:var(--ink-2); font-weight:700; letter-spacing:.5px;}
+  .empty{font-size:13.5px; color:var(--ink-3); padding:6px 0;}
+
+  /* ── 窄屏：标签独占一行，表格横向滚动 ── */
+  @media (max-width:640px){
+    body{padding:12px 8px 28px;}
+    .card{padding:24px 18px 22px;}
+    .masthead h1{font-size:18px; letter-spacing:2px;}
+    .masthead .meta{text-align:left;}
+    .lede h2{font-size:21px; line-height:1.45;}
+    /* 四个数字保持一行：折成 2×2 会读成四块孤立的数字，失去「本期概览」的连贯性 */
+    .stats{grid-template-columns:repeat(4,1fr);}
+    .stat{padding-left:10px;}
+    .stat b{font-size:19px;}
+    .stat span{font-size:10px; letter-spacing:0;}
+    section.action{padding-top:14px;}
+    ul.alerts li{display:block; font-size:14px;}
+    .tag{
+      display:block; width:auto; flex:none;
+      border-right:0; padding:0; margin:0 0 3px;
+      line-height:1.5; letter-spacing:.6px;
+    }
+    .alert-body{padding-left:0;}
+  }
+
+  /* ── 打印 / 存 PDF ── */
+  @page{margin:14mm 13mm;}
+  @media print{
+    body{background:#fff; padding:0; font-size:11.5px;}
+    .card{box-shadow:none; border:0; padding:0; max-width:none;}
+    section, tr, li{break-inside:avoid; page-break-inside:avoid;}
+    .tbl-wrap{overflow:visible;}
+    table.cal{min-width:0; font-size:10.5px;}
+    .lede h2 strong, .tag-red, .tag-amber, table.cal td.phase{
+      -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <header class="masthead">
+    <h1>竞品动态监测</h1>
+    <div class="meta sans">
+      监测日期 {{REPORT_DATE}}<br>
+      生成于 {{GEN_TIME}}
+    </div>
+  </header>
+  <div class="dateline sans">
+    <span><span class="en">Competitor Watch</span> · 一页速览</span>
+    <span>只列本期变化</span>
+  </div>
+
+  <div class="lede">
+    <h2>{{HEADLINE}}</h2>
+    <div class="stats sans">
+      {{STATS}}
+    </div>
+  </div>
+
+  <section class="action">
+    <div class="sec-head">
+      <h3>需要动作</h3>
+      <span class="note">红级 · 本周内处理</span>
+    </div>
+    <ul class="alerts">
+      {{ALERT_RED}}
+    </ul>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h3>持续关注</h3>
+      <span class="note">黄级 · 下期复核</span>
+    </div>
+    <ul class="alerts">
+      {{ALERT_AMBER}}
+    </ul>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h3>执行中招采项目</h3>
+      <span class="note">采购周期未结束</span>
+    </div>
+    <div class="tbl-wrap">
+      <table class="cal tender sans">
+        <thead>
+          <tr><th>类型</th><th>项目</th><th>产品（规格）</th><th>竞品状态</th><th>中选价</th><th>执行期</th></tr>
+        </thead>
+        <tbody>
+          {{TENDER_ROWS}}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h3>政策日历</h3>
+      <span class="note">未来 90 天已公告节点</span>
+    </div>
+    <div class="tbl-wrap">
+      <table class="cal sans">
+        <thead>
+          <tr><th>日期</th><th>事件</th><th>阶段</th><th>我方准备</th></tr>
+        </thead>
+        <tbody>
+          {{CALENDAR_ROWS}}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="disclaimer sans">
+    <b>本期范围</b>　{{FOOTER_META}}<br>
+    本页只列红黄两级与已公告节点；完整依据、绿级记录、待核验项与扫描明细见同一期 Markdown 台账。由 WorkBuddy 自动生成，需人工抽检后使用。
+  </div>
+
+</div>
+</body>
+</html>
