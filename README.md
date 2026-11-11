@@ -27,19 +27,17 @@
 
 ## 安装
 
-把下面的 `<你的用户名>` 换成本仓库的 GitHub 账号名（也可以直接在 GitHub 页面点 Code 复制 clone 地址）。
-
 macOS / Linux：
 
 ```bash
-git clone https://github.com/<你的用户名>/competitive-intel-brief.git \
+git clone https://github.com/wzf5251/competitive-intel-brief.git \
   ~/.workbuddy/skills/competitive-intel-brief
 ```
 
 Windows PowerShell：
 
 ```powershell
-git clone https://github.com/<你的用户名>/competitive-intel-brief.git "$env:USERPROFILE\.workbuddy\skills\competitive-intel-brief"
+git clone https://github.com/wzf5251/competitive-intel-brief.git "$env:USERPROFILE\.workbuddy\skills\competitive-intel-brief"
 ```
 
 目录名保持 `competitive-intel-brief`，与 `SKILL.md` 的 `name` 字段一致。Claude Code 用户把目标路径换成 `~/.claude/skills/competitive-intel-brief` 即可，格式通用。
